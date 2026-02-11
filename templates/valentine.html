@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Assurance Forever ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,700;1,400&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold: #d4af37;
+            --deep-red: #4a0404;
+        }
+        body { 
+            margin: 0; 
+            background: radial-gradient(circle at center, #800000 0%, #000 100%); 
+            color: white; 
+            font-family: 'Quicksand', sans-serif; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Animated Floating Petals Background */
+        #petals-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
+
+        /* Polaroid Section - Clear and Elegant */
+        .photo-stack {
+            position: relative;
+            z-index: 10;
+            width: 300px;
+            height: 350px;
+            background: white;
+            padding: 12px 12px 50px 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 20px rgba(212, 175, 55, 0.3);
+            border-radius: 4px;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .photo-display {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+
+        /* Luxury Glass Card */
+        .glass-card { 
+            background: rgba(0, 0, 0, 0.6); 
+            backdrop-filter: blur(25px); 
+            border: 1px solid rgba(212, 175, 55, 0.3); 
+            border-radius: 0 0 50px 50px; 
+            position: relative; 
+            z-index: 20;
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            margin-top: -20px;
+        }
+
+        .fancy-serif { font-family: 'Playfair Display', serif; }
+        .handwritten { font-family: 'Dancing Script', cursive; }
+        
+        .gold-text {
+    background: linear-gradient(to bottom, #fcf6ba, #d4af37);
+    -webkit-background-clip: text; /* Clips the gold background to the letter shapes */
+    background-clip: text;         /* Standard version for modern browsers */
+    -webkit-text-fill-color: transparent; /* Makes the original text color vanish so the gradient shows through */
+    color: transparent;            /* Fallback */
+    display: inline-block;         /* Ensures the background spans the text correctly */
+}
+
+        /* Pulse effect for the Yes button */
+        .pulse-gold {
+            box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+        
+        .cursor { display: inline-block; width: 2px; height: 1em; background: var(--gold); margin-left: 2px; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div id="petals-container"></div>
+
+    <div id="photo-frame" class="photo-stack">
+        <img id="main-img" src="/static/pic1.jpeg" class="photo-display">
+    </div>
+
+    <div class="glass-card text-center">
+        <div id="interactive-content">
+            <h2 class="handwritten text-4xl gold-text mb-2">My Dearest...</h2>
+            <h1 class="fancy-serif text-3xl italic tracking-wide mb-6">Will you be my Valentine?</h1>
+            
+            <div class="flex flex-col items-center gap-6">
+                <button onclick="revealLove()" class="pulse-gold bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-700 text-black font-bold uppercase tracking-widest px-12 py-4 rounded-full transition-transform hover:scale-105 active:scale-95">
+                    Yes, Forever
+                </button>
+                <button id="noBtn" onmouseover="dodge()" class="text-gray-500 text-xs tracking-widest uppercase hover:text-red-500 transition-colors">No</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="assuranceMusic" loop>
+        <source src="{{ url_for('static', filename='assurance.mp3') }}" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // 1. Slideshow Configuration
+        const gallery = ["/static/pic1.jpeg", "/static/pic2.jpeg", "/static/pic2.jpeg", "/static/Amaka.jpeg"];
+        let imgIdx = 0;
+        
+        function rotateGallery() {
+            const img = document.getElementById('main-img');
+            const frame = document.getElementById('photo-frame');
+            imgIdx = (imgIdx + 1) % gallery.length;
+            
+            img.style.opacity = 0;
+            setTimeout(() => {
+                img.src = gallery[imgIdx];
+                img.style.opacity = 1;
+                frame.style.transform = `rotate(${Math.random() * 6 - 3}deg) translateY(0)`;
+            }, 600);
+        }
+        setInterval(rotateGallery, 4000);
+
+        // 2. Petal Animation Logic
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.innerHTML = '❤️';
+            petal.style.position = 'absolute';
+            petal.style.left = Math.random() * 100 + 'vw';
+            petal.style.top = '-20px';
+            petal.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            petal.style.opacity = Math.random();
+            petal.style.color = '#ff4d4d';
+            petal.style.transition = `transform ${Math.random() * 5 + 5}s linear, top ${Math.random() * 5 + 5}s linear`;
+            
+            document.getElementById('petals-container').appendChild(petal);
+            
+            setTimeout(() => {
+                petal.style.top = '100vh';
+                petal.style.transform = `rotate(${Math.random() * 360}deg) translateX(${Math.random() * 100}px)`;
+            }, 10);
+            
+            setTimeout(() => petal.remove(), 8000);
+        }
+        setInterval(createPetal, 300);
+
+        // 3. Dodge Logic
+        function dodge() {
+            const btn = document.getElementById('noBtn');
+            btn.style.position = 'fixed';
+            btn.style.left = Math.random() * 80 + 10 + '%';
+            btn.style.top = Math.random() * 80 + 10 + '%';
+        }
+
+        // 4. The Grand Reveal
+        const loveNote = "I give you my Assurance. With you, every day is a celebration of love. You are my heartbeat, my best friend, and my queen. I love you endlessly! ❤️";
+
+        function typeMessage(text, i) {
+            if (i < text.length) {
+                document.getElementById('typewriter').innerHTML = text.substring(0, i+1) + '<span class="cursor"></span>';
+                setTimeout(() => typeMessage(text, i+1), 60);
+            }
+        }
+
+        function revealLove() {
+            document.getElementById('assuranceMusic').play();
+            
+            // Gold and Pink Confetti
+            confetti({
+                particleCount: 250,
+                spread: 100,
+                origin: { y: 0.6 },
+                colors: ['#d4af37', '#ff0000', '#ffffff']
+            });
+
+            document.getElementById('interactive-content').innerHTML = `
+                <h2 class="handwritten text-5xl gold-text mb-4">I Knew It!</h2>
+                <div id="typewriter" class="text-lg leading-relaxed italic text-gray-200 px-2 min-h-[100px]"></div>
+                <div class="mt-6 pt-6 border-t border-yellow-900/50">
+                    <p class="text-[10px] tracking-[0.3em] uppercase text-yellow-600 font-bold">Forever Together</p>
+                </div>
+            `;
+            
+            setTimeout(() => typeMessage(loveNote, 0), 800);
+        }
+    </script>
+</body>
+</html>
